@@ -2,19 +2,27 @@
 #define BASE64ALGORITHM_H
 
 #include<iostream>
+#include<cstring>
 #include<fstream>
 #include<vector>
+
 using namespace std;
 
 class BASE64
 {
 public:
 	BASE64(void);
-	BASE64(char*, char*);
+	BASE64(string, string);
+	BASE64(string, string, string);
+
 	~BASE64(void);
 
-	void clear();
-	void 
+	void clear(void);
+	void encode(string);
+	void encode(string, string);
+	void decode(string);
+	void decode(string, string);
+
 
 private:
 	static const char *Base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -52,14 +60,25 @@ private:
 		99, 99, 99, 99, 99, 99, 99, 99,
 		99, 99, 99, 99, 99, 99, 99, 99
 	};
-	
-	void blockBase64Encode();
-	void blockBase64Decode();
 
-	void Base64EncodeFile();
-	void Base64DecodeFile();
-	void Base64EncodeString();
-	void Base64DecodeString();
+	string base64String = "",
+		inputFilename = "",
+		outputFilename = "";
+	unsigned char buffer[4] = { 0x00, 0x00, 0x00, 0x00 };
+
+	void setInputFilename(string);
+	void setOutputFilename(string);
+	void setInputString(string);
+	
+	void blockBase64Encode(void);
+	void blockBase64Decode(void);
+
+	void Base64EncodeFile(void);
+	void Base64DecodeFile(void);
+	void Base64EncodeString(void);
+	void Base64DecodeString(void);
+
+	bool validateCharOfB64(unsigned char, size_t);
 };
 
 
