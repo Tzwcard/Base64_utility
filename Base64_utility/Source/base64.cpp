@@ -31,6 +31,7 @@ void BASE64::clear(void)
 	setInputFilename("");
 	setOutputFilename("");
 	setInputString("");
+	length = 0;
 	memset(buffer, 0x00, sizeof(buffer));
 }
 
@@ -75,42 +76,43 @@ void BASE64::setInputString(string input)
 void BASE64::blockBase64Encode(void)
 {
 	if (length == 1) {
-		i = Base64EncodeChars[a >> 2];
-		j = Base64EncodeChars[(a & 0x03) << 4];
-		k = '=';
-		l = '=';
+		buffer[3] = '=';
+		buffer[2] = '=';
+		buffer[1] = Base64EncodeChars[(buffer[0] & 0x03) << 4];
+		buffer[0] = Base64EncodeChars[buffer[0] >> 2];
 	}
 	else if (length == 2) {
-		i = Base64EncodeChars[a >> 2];
-		j = Base64EncodeChars[(a & 0x03) << 4 | (b >> 4)];
-		k = Base64EncodeChars[(b & 0x0f) << 2];
-		l = '=';
+		buffer[3] = '=';
+		buffer[2] = Base64EncodeChars[(buffer[1] & 0x0f) << 2];
+		buffer[1] = Base64EncodeChars[(buffer[0] & 0x03) << 4 | (buffer[1] >> 4)];
+		buffer[0] = Base64EncodeChars[buffer[0] >> 2];
 	}
 	else {
-		i = Base64EncodeChars[a >> 2];
-		j = Base64EncodeChars[(a & 0x03) << 4 | (b >> 4)];
-		k = Base64EncodeChars[(b & 0x0f) << 2 | (c >> 6)];
-		l = Base64EncodeChars[c & 0x3f];
+		buffer[3] = Base64EncodeChars[buffer[2] & 0x3f];
+		buffer[2] = Base64EncodeChars[(buffer[1] & 0x0f) << 2 | (buffer[2] >> 6)];
+		buffer[1] = Base64EncodeChars[(buffer[0] & 0x03) << 4 | (buffer[1] >> 4)];
+		buffer[0] = Base64EncodeChars[buffer[0] >> 2];	
 	}
 }
+
 void BASE64::blockBase64Decode(void)
 {
-	if (k == '='&&l == '=') {
-		a = Base64DecodeChars[i] << 2 | ((Base64DecodeChars[j] & 0x30) >> 4);
-		b = '0';
-		c = '0';
+	if (buffer[3] == '='&&buffer[2] == '=') {
+		buffer[0] = Base64DecodeChars[0] << 2 | ((Base64DecodeChars[1] & 0x30) >> 4);
+		buffer[1] = '0';
+		buffer[2] = '0';
 		length = 1;
 	}
-	else if (l == '='){
-		a = Base64DecodeChars[i] << 2 | ((Base64DecodeChars[j] & 0x30) >> 4);
-		b = ((Base64DecodeChars[j] & 0x0f) << 4) | ((Base64DecodeChars[k] & 0x3c) >> 2);
-		c = '0';
+	else if (buffer[2] == '='){
+		buffer[0] = Base64DecodeChars[0] << 2 | ((Base64DecodeChars[1] & 0x30) >> 4);
+		buffer[1] = ((Base64DecodeChars[1] & 0x0f) << 4) | ((Base64DecodeChars[2] & 0x3c) >> 2);
+		buffer[2] = '0';
 		length = 2;
 	}
 	else {
-		a = Base64DecodeChars[i] << 2 | ((Base64DecodeChars[j] & 0x30) >> 4);
-		b = ((Base64DecodeChars[j] & 0x0f) << 4) | ((Base64DecodeChars[k] & 0x3c) >> 2);
-		c = (Base64DecodeChars[k] & 0x03) << 6 | Base64DecodeChars[l];
+		buffer[0] = Base64DecodeChars[0] << 2 | ((Base64DecodeChars[1] & 0x30) >> 4);
+		buffer[1] = ((Base64DecodeChars[1] & 0x0f) << 4) | ((Base64DecodeChars[2] & 0x3c) >> 2);
+		buffer[2] = (Base64DecodeChars[2] & 0x03) << 6 | Base64DecodeChars[3];
 		length = 3;
 	}
 }

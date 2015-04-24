@@ -64,6 +64,7 @@ private:
 	string base64String = "",
 		inputFilename = "",
 		outputFilename = "";
+	size_t length = 0;
 	unsigned char buffer[4] = { 0x00, 0x00, 0x00, 0x00 };
 
 	void setInputFilename(string);
