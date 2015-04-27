@@ -24,7 +24,7 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Reference\Base64.cpp">
+    <ClCompile Include="Reference\Base64_ref.cpp">
       <Filter>Old References</Filter>
     </ClCompile>
   </ItemGroup>
